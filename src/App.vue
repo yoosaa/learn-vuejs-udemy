@@ -5,12 +5,14 @@
     <form v-on:submit.prevent>
       <input type="text" v-model="task" />
       <ul>
-        <li v-for="item in todos" :key="item.item">
+        <li v-for="(item, index) in todos" :key="item.item">
           <input type="checkbox" v-model="item.isDone">
-          <span>{{ item.item }}</span>
-          </li>
+          <span v-cloak v-bind:class="{ done: item.isDone }">{{ item.item.split('').reverse().join('') }}</span>
+          <button v-on:click="removeItem(index)">Remove</button>
+        </li>
       </ul>
       <button v-on:click="addItem">Add</button>
+      <button v-on:click="removeItem()">Remove</button>
     </form>
     <div>
       {{ $data }}
@@ -19,7 +21,6 @@
 </template>
 
 <script>
-// import HelloWorld from "./components/HelloWorld.vue";
 import isEmpty from "./js/utils/isEmpty";
 
 export default {
@@ -30,8 +31,6 @@ export default {
   }),
   methods: {
     addItem: function () {
-      console.log('clicked!');
-
       if(isEmpty(this.task)) return;
 
       let todo = {
@@ -40,6 +39,15 @@ export default {
       };
       this.todos.push(todo);
       this.task = '';
+    },
+    removeItem: function (e) {
+      if(e === undefined){
+        this.todos = this.todos.filter((todo)=>{
+          return todo.isDone !== true;
+        });
+      }else{
+        this.todos.splice(e, 1);
+      }
     }
   }
 };
@@ -53,5 +61,10 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+  li {
+    span.done{
+      text-decoration: line-through;
+    }
+  }
 }
 </style>
